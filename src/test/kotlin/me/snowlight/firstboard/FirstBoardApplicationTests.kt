@@ -9,5 +9,4 @@ class FirstBoardApplicationTests {
     @Test
     fun contextLoads() {
     }
-
 }

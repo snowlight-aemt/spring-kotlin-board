@@ -5,6 +5,9 @@ import me.snowlight.firstboard.controller.dto.PostDetailResponse
 import me.snowlight.firstboard.controller.dto.PostSearchRequest
 import me.snowlight.firstboard.controller.dto.PostSearchResponse
 import me.snowlight.firstboard.controller.dto.PostUpdateRequest
+import me.snowlight.firstboard.controller.dto.toDto
+import me.snowlight.firstboard.service.PostService
+import me.snowlight.firstboard.service.dto.PostDeleteDto
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
@@ -20,18 +23,20 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/posts")
-class PostController {
+class PostController(
+    val postService: PostService,
+) {
     @PostMapping
     fun create(@RequestBody request: PostCreateRequest) =
-        ResponseEntity.ok(1L)
+        ResponseEntity.ok(postService.createPost(request.toDto()))
 
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody request: PostUpdateRequest) =
-        ResponseEntity.ok(id)
+        ResponseEntity.ok(postService.updatePost(id, request.toDto()))
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long, @RequestParam createdBy: String) =
-        ResponseEntity.ok(id)
+        ResponseEntity.ok(postService.deletePost(id, PostDeleteDto(createdBy)))
 
     @GetMapping("/{id}")
     fun getPost(@PathVariable id: Long) =

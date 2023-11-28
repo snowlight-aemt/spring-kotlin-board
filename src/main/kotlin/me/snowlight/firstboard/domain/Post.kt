@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Lob
 import jakarta.persistence.Table
+import me.snowlight.firstboard.exception.PostNotUpdatableException
+import me.snowlight.firstboard.service.dto.PostUpdateDto
 
 @Entity
 @Table
@@ -19,7 +21,7 @@ class Post(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
+    var id: Long = 0
     @Column(name = "title")
     var title: String = title
         protected set
@@ -27,4 +29,15 @@ class Post(
     @Column(name = "content")
     var content: String = content
         protected set
+
+    fun update(postUpdateDto: PostUpdateDto) {
+        if (postUpdateDto.updatedBy != this.createdBy) {
+            throw PostNotUpdatableException()
+        }
+
+        this.title = postUpdateDto.title
+        this.content = postUpdateDto.content
+
+        super.updatedBy(postUpdateDto.updatedBy)
+    }
 }

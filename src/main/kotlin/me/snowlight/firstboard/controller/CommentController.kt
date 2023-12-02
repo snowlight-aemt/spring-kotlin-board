@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 @RestController
 class CommentController {
-    @PostMapping("/posts/{id}/comments")
+    @PostMapping("/posts/{postId}/comments")
     fun createComment(
-        @PathVariable id: Long,
+        @PathVariable postId: Long,
         @RequestBody request: CommentCreateRequest,
     ): ResponseEntity<Long> {
-        println("Post /posts/${id}/comments")
-        return ok(id)
+        println("Post /posts/${postId}/comments")
+        return ok(1L)
     }
 
     @PutMapping("/comments/{id}")

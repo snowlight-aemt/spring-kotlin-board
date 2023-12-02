@@ -1,10 +1,12 @@
 package me.snowlight.firstboard.service
 
+import me.snowlight.firstboard.exception.CommentNotDeletableException
 import me.snowlight.firstboard.exception.CommentNotFoundException
 import me.snowlight.firstboard.exception.PostNotFoundException
 import me.snowlight.firstboard.repository.CommentRepository
 import me.snowlight.firstboard.repository.PostRepository
 import me.snowlight.firstboard.service.dto.CommentCreateDto
+import me.snowlight.firstboard.service.dto.CommentDeleteDto
 import me.snowlight.firstboard.service.dto.CommentUpdateDto
 import me.snowlight.firstboard.service.dto.toEntity
 import org.springframework.data.repository.findByIdOrNull
@@ -27,9 +29,20 @@ class CommentService(
 
     @Transactional
     fun updateComment(commentId: Long, commentUpdateDto: CommentUpdateDto): Long {
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw CommentNotFoundException();
+        val comment = commentRepository.findByIdOrNull(commentId) ?: throw CommentNotFoundException()
         comment.update(commentUpdateDto)
 
         return commentId;
+    }
+
+    @Transactional
+    fun deleteComment(commentId: Long, commentDeleteDto: CommentDeleteDto): Long {
+        val comment = commentRepository.findByIdOrNull(commentId) ?: throw CommentNotFoundException()
+        if (commentDeleteDto.updatedBy != comment.createdBy ) {
+            throw CommentNotDeletableException();
+        }
+
+        commentRepository.delete(comment)
+        return commentId
     }
 }

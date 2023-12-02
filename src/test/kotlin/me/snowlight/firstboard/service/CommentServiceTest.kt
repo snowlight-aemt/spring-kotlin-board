@@ -6,12 +6,14 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import me.snowlight.firstboard.domain.Comment
 import me.snowlight.firstboard.domain.Post
+import me.snowlight.firstboard.exception.CommentNotDeletableException
 import me.snowlight.firstboard.exception.CommentNotFoundException
 import me.snowlight.firstboard.exception.CommentNotUpdatableException
 import me.snowlight.firstboard.exception.PostNotFoundException
 import me.snowlight.firstboard.repository.CommentRepository
 import me.snowlight.firstboard.repository.PostRepository
 import me.snowlight.firstboard.service.dto.CommentCreateDto
+import me.snowlight.firstboard.service.dto.CommentDeleteDto
 import me.snowlight.firstboard.service.dto.CommentUpdateDto
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
@@ -89,6 +91,43 @@ class CommentServiceTest(
                     commentService.updateComment(
                         commentSaved.id,
                         CommentUpdateDto(content = "수정 내용",updatedBy = "유저1"))
+                }
+            }
+        }
+    }
+
+    given("댓글 삭제 시") {
+        val postSaved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "유저1"))
+        val commentSaved = commentRepository.save(Comment(content = "내용", createdBy = "유저2", post = postSaved))
+        When("댓글에 정보가 정상인 경우") {
+            val commentIdDeleted = commentService.deleteComment(commentSaved.id, CommentDeleteDto("유저2"))
+            then("댓글이 정상적으로 삭제되어는 확인한다.") {
+                commentIdDeleted shouldNotBe null
+                commentIdDeleted shouldBe commentSaved.id
+                val commentDeleted = commentRepository.findByIdOrNull(commentIdDeleted)
+                commentDeleted shouldBe null
+            }
+        }
+
+        When("댓글을 찾을 수 없는 경우") {
+            then("댓글을 찾을 수 없습니다 예외가 발생한다.") {
+                shouldThrow<CommentNotFoundException> {
+                    commentService.deleteComment(
+                        99999L,
+                        CommentDeleteDto("유저2")
+                    )
+                }
+            }
+        }
+
+        When("댓글을 생성한 작성자와 삭제하는 유저가 동일하지 않는 경우") {
+            val commentSaved2 = commentRepository.save(Comment(content = "내용", createdBy = "유저2", post = postSaved))
+            then("댓글을 삭제할 수 없습니다. 에외가 발생한다.") {
+                shouldThrow<CommentNotDeletableException> {
+                    commentService.deleteComment(
+                        commentSaved2.id,
+                        CommentDeleteDto("유저3")
+                    )
                 }
             }
         }

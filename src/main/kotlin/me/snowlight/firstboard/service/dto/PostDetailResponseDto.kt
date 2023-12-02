@@ -12,14 +12,6 @@ data class PostDetailResponseDto (
     val comments: List<CommentDetailResponseDto>
 )
 
-fun PostDetailResponseDto.toEntity(): Post {
-    return Post(
-        title = title,
-        content = content,
-        createdBy = createdBy,
-    )
-}
-
 fun Post.toPostDetailResponseDto(): PostDetailResponseDto {
     return PostDetailResponseDto(
         id = this.id,

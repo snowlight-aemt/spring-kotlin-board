@@ -1,9 +1,13 @@
 package me.snowlight.firstboard.service
 
-import me.snowlight.firstboard.domain.Comment
+import me.snowlight.firstboard.exception.CommentNotFoundException
+import me.snowlight.firstboard.exception.PostNotFoundException
 import me.snowlight.firstboard.repository.CommentRepository
+import me.snowlight.firstboard.repository.PostRepository
 import me.snowlight.firstboard.service.dto.CommentCreateDto
+import me.snowlight.firstboard.service.dto.CommentUpdateDto
 import me.snowlight.firstboard.service.dto.toEntity
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -11,13 +15,21 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class CommentService(
     val commentRepository: CommentRepository,
-    val postService: PostService,
+    val postRepository: PostRepository,
 ) {
+    @Transactional
     fun createComment(postId: Long, commentCreateDto: CommentCreateDto): Long {
         // TODO toDomain : 확장 함수... 구현 위치가....
-        val post = postService.getPost(postId).toEntity()
-
+        val post = postRepository.findByIdOrNull(postId) ?: throw PostNotFoundException()
         val comment = commentRepository.save(commentCreateDto.toEntity(post))
         return comment.id
+    }
+
+    @Transactional
+    fun updateComment(commentId: Long, commentUpdateDto: CommentUpdateDto): Long {
+        val comment = commentRepository.findByIdOrNull(commentId) ?: throw CommentNotFoundException();
+        comment.update(commentUpdateDto)
+
+        return commentId;
     }
 }

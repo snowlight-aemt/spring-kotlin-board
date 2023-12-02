@@ -4,11 +4,15 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import me.snowlight.firstboard.domain.Comment
 import me.snowlight.firstboard.domain.Post
+import me.snowlight.firstboard.exception.CommentNotFoundException
+import me.snowlight.firstboard.exception.CommentNotUpdatableException
 import me.snowlight.firstboard.exception.PostNotFoundException
 import me.snowlight.firstboard.repository.CommentRepository
 import me.snowlight.firstboard.repository.PostRepository
 import me.snowlight.firstboard.service.dto.CommentCreateDto
+import me.snowlight.firstboard.service.dto.CommentUpdateDto
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 
@@ -25,7 +29,7 @@ class CommentServiceTest(
                 postSaved.id,
                 CommentCreateDto(
                     content = "댓글 내용",
-                    createdBy = "유저2"
+                    createdBy = "유저2",
                 )
             )
             then("댓글이 정상적으로 생성되는지 확인") {
@@ -47,6 +51,44 @@ class CommentServiceTest(
                             createdBy = "유저2"
                         )
                     )
+                }
+            }
+        }
+    }
+
+    given("댓글 수정 시") {
+        val postSaved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "유저1"))
+        When("댓글에 정상 인풋을 입력했을 때") {
+            val commentSaved = commentRepository.save(Comment(content = "내용", createdBy = "유저2", post = postSaved))
+            val commentId = commentService.updateComment(
+                                                commentSaved.id,
+                                                CommentUpdateDto(content = "수정 내용",updatedBy = "유저2"))
+            then("댓글이 정상적으로 수정되었는지 확인한다.") {
+                commentId shouldNotBe null
+                val commentUpdated = commentRepository.findByIdOrNull(commentId)
+                commentUpdated shouldNotBe null
+                commentUpdated?.content shouldBe "수정 내용"
+                commentUpdated?.createdBy shouldBe "유저2"
+            }
+        }
+
+        When("댓글이 없는 경우") {
+            then("댓글을 찾을 수 없다는 예외가 발생한다.") {
+                shouldThrow<CommentNotFoundException> {
+                    commentService.updateComment(
+                        99999L,
+                        CommentUpdateDto(content = "수정 내용",updatedBy = "유저2"))
+                }
+            }
+        }
+
+        When("댓글 수정을 요청하는 유저가 동일하지 않을 때") {
+            val commentSaved = commentRepository.save(Comment(content = "내용", createdBy = "유저2", post = postSaved))
+            then("댓글을 수정할 수 없다는 예외가 발생한다.") {
+                shouldThrow<CommentNotUpdatableException> {
+                    commentService.updateComment(
+                        commentSaved.id,
+                        CommentUpdateDto(content = "수정 내용",updatedBy = "유저1"))
                 }
             }
         }

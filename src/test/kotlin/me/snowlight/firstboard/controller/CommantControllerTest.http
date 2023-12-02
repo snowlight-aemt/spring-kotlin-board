@@ -1,0 +1,24 @@
+### 댓글 생성
+POST http://localhost:8080/posts/1/comments
+Content-Type: application/json
+
+{
+    "title": "title",
+    "content": "content",
+    "createdBy": "creator"
+}
+### 댓글 수정
+PUT http://localhost:8080/comments/1
+Content-Type: application/json
+
+{
+    "title": "title",
+    "content": "content",
+    "updatedBy": "updater"
+}
+
+### 댓글 삭제
+DELETE http://localhost:8080/comments/1?updatedBy=updater2
+
+### 댓글 조회
+GET http://localhost:8080/psots/1

@@ -2,9 +2,9 @@ package me.snowlight.firstboard.controller.dto
 
 import jakarta.validation.constraints.NotEmpty
 
-data class CommentCreateRequest (
+data class CommentUpdateRequest (
     @NotEmpty
     val content: String,
     @NotEmpty
-    val createdBy: String
+    val updatedBy: String,
 )

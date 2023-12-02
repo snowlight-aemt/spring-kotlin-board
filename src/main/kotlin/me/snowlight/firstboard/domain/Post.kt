@@ -1,11 +1,13 @@
 package me.snowlight.firstboard.domain
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Lob
+import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import me.snowlight.firstboard.exception.PostNotUpdatableException
 import me.snowlight.firstboard.service.dto.PostUpdateDto
@@ -21,6 +23,7 @@ class Post(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
     var id: Long = 0
     @Column(name = "title")
     var title: String = title
@@ -28,6 +31,10 @@ class Post(
     @Lob
     @Column(name = "content")
     var content: String = content
+        protected set
+
+    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = [CascadeType.ALL])
+    var comments: MutableList<Comment> = mutableListOf()
         protected set
 
     fun update(postUpdateDto: PostUpdateDto) {

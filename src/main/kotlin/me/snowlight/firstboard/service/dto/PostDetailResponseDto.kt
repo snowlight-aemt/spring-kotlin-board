@@ -1,9 +1,6 @@
 package me.snowlight.firstboard.service.dto
 
-import me.snowlight.firstboard.controller.dto.PostDetailResponse
 import me.snowlight.firstboard.domain.Post
-import org.springframework.data.annotation.CreatedBy
-import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
 
 data class PostDetailResponseDto (
@@ -12,6 +9,7 @@ data class PostDetailResponseDto (
     val content: String,
     val createdBy: String,
     val createdAt: LocalDateTime,
+    val comments: List<CommentDetailResponseDto>
 )
 
 fun Post.toPostDetailResponseDto(): PostDetailResponseDto {
@@ -21,5 +19,11 @@ fun Post.toPostDetailResponseDto(): PostDetailResponseDto {
         content = this.content,
         createdBy = this.createdBy,
         createdAt = this.createdAt,
+        comments = this.comments.map { CommentDetailResponseDto(
+            id = it.id,
+            content = it.content,
+            createdBy = it.createdBy,
+            createdAt = it.createdAt,
+        ) }
     )
 }

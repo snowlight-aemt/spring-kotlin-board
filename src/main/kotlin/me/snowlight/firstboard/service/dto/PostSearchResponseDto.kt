@@ -9,7 +9,7 @@ data class PostSearchResponseDto (
     val id: Long,
     val title: String,
     val createdBy: String,
-    val createdDate: LocalDateTime,
+    val createdAt: LocalDateTime,
 )
 // TODO 함수 확장으로 다른 파일 안에서 상관없는 클래스에 함수를 확장할 수 있다.
 fun Page<Post>.toPageSearchResponseDto() = PageImpl(
@@ -22,5 +22,5 @@ fun Post.toPageSearchResponseDto() = PostSearchResponseDto(
     id = this.id,
     title = this.title,
     createdBy = this.createdBy,
-    createdDate = this.createdDate,
+    createdAt = this.createdAt,
 )

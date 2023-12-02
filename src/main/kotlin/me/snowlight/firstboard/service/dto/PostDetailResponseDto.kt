@@ -11,7 +11,7 @@ data class PostDetailResponseDto (
     val title: String,
     val content: String,
     val createdBy: String,
-    val createdDate: LocalDateTime,
+    val createdAt: LocalDateTime,
 )
 
 fun Post.toPostDetailResponseDto(): PostDetailResponseDto {
@@ -20,6 +20,6 @@ fun Post.toPostDetailResponseDto(): PostDetailResponseDto {
         title = this.title,
         content = this.content,
         createdBy = this.createdBy,
-        createdDate = this.createdDate,
+        createdAt = this.createdAt,
     )
 }

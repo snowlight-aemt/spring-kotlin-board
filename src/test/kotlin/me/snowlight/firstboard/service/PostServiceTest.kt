@@ -1,9 +1,7 @@
 package me.snowlight.firstboard.service
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.BeforeSpec
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -15,6 +13,7 @@ import me.snowlight.firstboard.exception.PostNotFoundException
 import me.snowlight.firstboard.repository.PostRepository
 import me.snowlight.firstboard.service.dto.PostCreateDto
 import me.snowlight.firstboard.service.dto.PostDeleteDto
+import me.snowlight.firstboard.service.dto.PostSearchRequestDto
 import me.snowlight.firstboard.service.dto.PostSearchResponseDto
 import me.snowlight.firstboard.service.dto.PostUpdateDto
 import org.springframework.boot.test.context.SpringBootTest
@@ -31,9 +30,9 @@ class PostServiceTest(
         postRepository.saveAll(
             listOf(
                 Post(title = "제목1", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목2", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목3", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목4", content = "내용", createdBy = "글쓴이"),
+                Post(title = "제목1", content = "내용", createdBy = "글쓴이1"),
+                Post(title = "제목1", content = "내용", createdBy = "글쓴이1"),
+                Post(title = "제목1", content = "내용", createdBy = "글쓴이"),
                 Post(title = "제목5", content = "내용", createdBy = "글쓴이"),
                 Post(title = "제목6", content = "내용", createdBy = "글쓴이"),
                 Post(title = "제목7", content = "내용", createdBy = "글쓴이"),
@@ -146,7 +145,7 @@ class PostServiceTest(
                 postDetailResponseDto.title shouldBe "제목"
                 postDetailResponseDto.content shouldBe "내용"
                 postDetailResponseDto.createdBy shouldBe "글쓴이"
-                postDetailResponseDto.createdDate shouldBe saved.createdDate
+                postDetailResponseDto.createdAt shouldBe saved.createdAt
             }
         }
         When("게시글을 찾을 수 없을때") {
@@ -160,15 +159,39 @@ class PostServiceTest(
 
     given("게시글 조회 시") {
         When("게시글 목록 조회할 때") {
-            val page: Page<PostSearchResponseDto> = postService.getPageBy(PageRequest.of(0, 5))
+            val page: Page<PostSearchResponseDto> = postService.getPageBy(PageRequest.of(0, 5), PostSearchRequestDto())
             then("게시글 목록을 확인할 수 있다.") {
                 page.number shouldBe 0
                 page.size shouldBe 5
                 page.content.size shouldBe 5
                 page.content[0].title shouldContain "제목"
                 page.content[0].createdBy shouldContain "글쓴이"
-                page.content[1].title shouldContain "제목2"
+                page.content[1].title shouldContain "제목"
                 page.content[1].createdBy shouldContain "글쓴이"
+            }
+        }
+
+        When("게시글 목록을 제목 조건 조회할 때") {
+            val page: Page<PostSearchResponseDto> = postService.getPageBy(PageRequest.of(0, 5), PostSearchRequestDto(title = "제목1"))
+            then("게시글 목록을 확인할 수 있다.") {
+                page.number shouldBe 0
+                page.size shouldBe 5
+                page.content.size shouldBe 5
+                page.content[0].title shouldContain "제목1"
+                page.content[1].title shouldContain "제목1"
+            }
+        }
+
+        When("게시글 목록을 글쓴이 조건 조회할 때") {
+            val page: Page<PostSearchResponseDto> = postService.getPageBy(PageRequest.of(0, 5), PostSearchRequestDto(createdBy = "글쓴이1"))
+            then("게시글 목록을 확인할 수 있다.") {
+                page.number shouldBe 0
+                page.size shouldBe 5
+                page.content.size shouldBe 2
+                page.content[0].title shouldContain "제목1"
+                page.content[0].createdBy shouldContain "글쓴이1"
+                page.content[1].title shouldContain "제목1"
+                page.content[1].createdBy shouldContain "글쓴이1"
             }
         }
     }

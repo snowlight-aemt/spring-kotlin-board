@@ -6,8 +6,11 @@ import me.snowlight.firstboard.controller.dto.PostSearchRequest
 import me.snowlight.firstboard.controller.dto.PostSearchResponse
 import me.snowlight.firstboard.controller.dto.PostUpdateRequest
 import me.snowlight.firstboard.controller.dto.toDto
+import me.snowlight.firstboard.controller.dto.toPostResponse
+import me.snowlight.firstboard.controller.dto.toResponse
 import me.snowlight.firstboard.service.PostService
 import me.snowlight.firstboard.service.dto.PostDeleteDto
+import org.springdoc.core.annotations.ParameterObject
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
@@ -39,20 +42,13 @@ class PostController(
         ResponseEntity.ok(postService.deletePost(id, PostDeleteDto(createdBy)))
 
     @GetMapping("/{id}")
-    fun getPost(@PathVariable id: Long) =
-        ResponseEntity.ok(
-            PostDetailResponse(
-                id = id,
-                title = "title",
-                content = "content",
-                createdBy = "createdBy"
-            )
-        )
+    fun getPost(@PathVariable id: Long) : ResponseEntity<PostDetailResponse> =
+        ResponseEntity.ok(postService.getPost(id).toPostResponse())
 
     @GetMapping
     fun getPosts(
         pageable: Pageable,
-        request: PostSearchRequest,
+        @ParameterObject request: PostSearchRequest,
     ): ResponseEntity<Page<PostSearchResponse>> =
-        ResponseEntity.ok(Page.empty(pageable))
+        ResponseEntity.ok(postService.getPageBy(pageable, request.toDto()).toResponse())
 }

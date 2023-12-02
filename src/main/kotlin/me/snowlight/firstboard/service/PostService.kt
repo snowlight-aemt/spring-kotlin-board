@@ -6,6 +6,7 @@ import me.snowlight.firstboard.repository.PostRepository
 import me.snowlight.firstboard.service.dto.PostCreateDto
 import me.snowlight.firstboard.service.dto.PostDeleteDto
 import me.snowlight.firstboard.service.dto.PostDetailResponseDto
+import me.snowlight.firstboard.service.dto.PostSearchRequestDto
 import me.snowlight.firstboard.service.dto.PostSearchResponseDto
 import me.snowlight.firstboard.service.dto.PostUpdateDto
 import me.snowlight.firstboard.service.dto.toPageSearchResponseDto
@@ -46,7 +47,7 @@ class PostService(
     }
 
     // TODO Page 하는 방법
-    fun getPageBy(page: Pageable): Page<PostSearchResponseDto> {
-        return postRepository.findAll(page).toPageSearchResponseDto()
+    fun getPageBy(page: Pageable, postSearchRequestDto: PostSearchRequestDto): Page<PostSearchResponseDto> {
+        return postRepository.findPageBy(page, postSearchRequestDto).toPageSearchResponseDto()
     }
 }

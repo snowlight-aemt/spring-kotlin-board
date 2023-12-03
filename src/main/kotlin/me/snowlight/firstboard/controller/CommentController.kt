@@ -2,27 +2,28 @@ package me.snowlight.firstboard.controller
 
 import me.snowlight.firstboard.controller.dto.CommentCreateRequest
 import me.snowlight.firstboard.controller.dto.CommentUpdateRequest
-import org.springdoc.core.annotations.ParameterObject
+import me.snowlight.firstboard.service.CommentService
+import me.snowlight.firstboard.service.dto.CommentDeleteDto
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+
 @RestController
-class CommentController {
-    @PostMapping("/posts/{id}/comments")
+class CommentController(
+    private val commentService: CommentService,
+) {
+    @PostMapping("/posts/{postId}/comments")
     fun createComment(
-        @PathVariable id: Long,
+        @PathVariable postId: Long,
         @RequestBody request: CommentCreateRequest,
     ): ResponseEntity<Long> {
-        println("Post /posts/${id}/comments")
-        return ok(id)
+        return ok(commentService.createComment(postId, request.toDto()))
     }
 
     @PutMapping("/comments/{id}")
@@ -30,8 +31,7 @@ class CommentController {
         @PathVariable id: Long,
         @RequestBody request: CommentUpdateRequest,
     ): ResponseEntity<Long> {
-        println("Put /comments/${id}")
-        return ok(id)
+        return ok(commentService.updateComment(id, request.toDto()))
     }
 
     @DeleteMapping("/comments/{id}")
@@ -39,8 +39,7 @@ class CommentController {
         @PathVariable id: Long,
         @RequestParam deletedBy: String,
     ): ResponseEntity<Long> {
-        println("Delete /comments/${id}?deletedBy=${deletedBy}")
-        return ok(id)
+        return ok(commentService.deleteComment(id, CommentDeleteDto(deletedBy = deletedBy)))
     }
 }
 

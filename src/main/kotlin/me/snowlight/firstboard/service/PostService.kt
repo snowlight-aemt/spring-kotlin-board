@@ -3,6 +3,7 @@ package me.snowlight.firstboard.service
 import me.snowlight.firstboard.exception.PostNotDeletableException
 import me.snowlight.firstboard.exception.PostNotFoundException
 import me.snowlight.firstboard.repository.PostRepository
+import me.snowlight.firstboard.repository.TagRepository
 import me.snowlight.firstboard.service.dto.PostCreateDto
 import me.snowlight.firstboard.service.dto.PostDeleteDto
 import me.snowlight.firstboard.service.dto.PostDetailResponseDto

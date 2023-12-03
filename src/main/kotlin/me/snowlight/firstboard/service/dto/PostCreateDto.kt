@@ -12,6 +12,7 @@ data class PostCreateDto(
     fun toEntity() = Post(
         title = title,
         content = content,
-        createdBy = createdBy
+        createdBy = createdBy,
+        tags = tags,
     )
 }

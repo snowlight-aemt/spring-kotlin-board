@@ -26,8 +26,7 @@ class Tag(
     @Column(name = "name")
     val name: String = name
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY )
     @JoinColumn(name = "post_id")
-    protected
     val post: Post = post
 }

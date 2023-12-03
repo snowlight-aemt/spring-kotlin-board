@@ -13,6 +13,7 @@ import me.snowlight.firstboard.exception.PostNotFoundException
 import me.snowlight.firstboard.exception.PostNotUpdatableException
 import me.snowlight.firstboard.repository.CommentRepository
 import me.snowlight.firstboard.repository.PostRepository
+import me.snowlight.firstboard.repository.TagRepository
 import me.snowlight.firstboard.service.dto.PostCreateDto
 import me.snowlight.firstboard.service.dto.PostDeleteDto
 import me.snowlight.firstboard.service.dto.PostSearchRequestDto
@@ -28,6 +29,7 @@ class PostServiceTest(
     postService: PostService,
     postRepository: PostRepository,
     commentRepository: CommentRepository,
+    tagRepository: TagRepository,
 ) : BehaviorSpec({
     beforeSpec {
         postRepository.saveAll(
@@ -64,6 +66,32 @@ class PostServiceTest(
                 post?.title shouldBe "제목"
                 post?.content shouldBe "내용"
                 post?.createdBy shouldBe "글쓴이"
+            }
+        }
+
+        When("게시글 인풋이 정상적으로 들어오면 (태그 포함)") {
+            val postId = postService.createPost(
+                PostCreateDto(
+                    title = "제목",
+                    content = "내용",
+                    createdBy = "글쓴이",
+                    tags = mutableListOf("spring", "java", "code"),
+                )
+            )
+
+            then("게시글 정상적으로 생성됨을 확인한다.") {
+                val tags = tagRepository.findByPostId(postId)
+                tags[0].name shouldBe  "spring"
+//                postId shouldBeGreaterThan 0L
+//                val post = postRepository.findByIdOrNull(postId)
+//                post shouldNotBe null
+//                post?.title shouldBe "제목"
+//                post?.content shouldBe "내용"
+//                post?.createdBy shouldBe "글쓴이"
+//                post?.tags shouldNotBe null
+//                post?.tags?.get(0) shouldBe "spring"
+//                post?.tags?.get(0) shouldBe "java"
+//                post?.tags?.get(0) shouldBe "code"
             }
         }
     }

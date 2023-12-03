@@ -97,7 +97,7 @@ class PostServiceTest(
     }
 
     given("게시글 수정 시") {
-        val saved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "글쓴이"))
+        val saved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "글쓴이", tags = mutableListOf("spring", "java")))
         When("게시글 수정 인풋이 정상적으로 들어오면") {
             val updatedId = postService.updatePost(
                 saved.id,
@@ -114,6 +114,53 @@ class PostServiceTest(
                 post shouldNotBe null
                 post?.title shouldBe "수정 제목"
                 post?.content shouldBe "수정 내용"
+            }
+        }
+        When("게시글 수정 인풋이 정상적으로 들어오면 (태그 포함)") {
+            val updatedId = postService.updatePost(
+                saved.id,
+                PostUpdateDto(
+                    title = "수정 제목",
+                    content = "수정 내용",
+                    updatedBy = "글쓴이",
+                    tags = mutableListOf("code", "spring", "java"),
+                )
+            )
+
+            then("게시글이 정상적으로 수정됨을 확인한다.") {
+                updatedId shouldNotBe null
+                val post = postRepository.findByIdOrNull(saved.id)
+                post shouldNotBe null
+                post?.title shouldBe "수정 제목"
+                post?.content shouldBe "수정 내용"
+
+                var tags = tagRepository.findByPostId(saved.id)
+                tags[0].name shouldBe "code"
+                tags[1].name shouldBe "spring"
+                tags[2].name shouldBe "java"
+            }
+
+            then("게시글이 정상적으로 수정됨을 확인한다. (순서만 다른 경우") {
+                val updatedId = postService.updatePost(
+                    saved.id,
+                    PostUpdateDto(
+                        title = "수정 제목",
+                        content = "수정 내용",
+                        updatedBy = "글쓴이",
+                        tags = mutableListOf("spring", "java", "code"),
+                    )
+                )
+
+                updatedId shouldNotBe null
+                val post = postRepository.findByIdOrNull(saved.id)
+                post shouldNotBe null
+                post?.title shouldBe "수정 제목"
+                post?.content shouldBe "수정 내용"
+
+                var tags = tagRepository.findByPostId(saved.id)
+                tags[0].name shouldBe "spring"
+                tags[1].name shouldBe "java"
+                tags[2].name shouldBe "code"
             }
         }
         When("게시글이 없을때") {

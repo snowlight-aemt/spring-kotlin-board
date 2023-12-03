@@ -52,6 +52,11 @@ class Post(
         this.title = postUpdateDto.title
         this.content = postUpdateDto.content
 
+        if (this.tags.map { it.name } != postUpdateDto.tags) {
+            this.tags.clear()
+            this.tags.addAll(postUpdateDto.tags.map { Tag(it, postUpdateDto.updatedBy, this) }.toMutableList())
+        }
+
         super.updatedBy(postUpdateDto.updatedBy)
     }
 }

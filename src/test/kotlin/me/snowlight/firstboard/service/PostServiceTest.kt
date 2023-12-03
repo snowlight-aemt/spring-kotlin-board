@@ -2,14 +2,18 @@ package me.snowlight.firstboard.service
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
+import me.snowlight.firstboard.domain.Comment
 import me.snowlight.firstboard.domain.Post
 import me.snowlight.firstboard.exception.PostNotDeletableException
 import me.snowlight.firstboard.exception.PostNotUpdatableException
 import me.snowlight.firstboard.exception.PostNotFoundException
+import me.snowlight.firstboard.repository.CommentRepository
 import me.snowlight.firstboard.repository.PostRepository
 import me.snowlight.firstboard.service.dto.PostCreateDto
 import me.snowlight.firstboard.service.dto.PostDeleteDto
@@ -25,6 +29,7 @@ import org.springframework.data.repository.findByIdOrNull
 class PostServiceTest(
     postService: PostService,
     postRepository: PostRepository,
+    commentRepository: CommentRepository,
 ): BehaviorSpec({
     beforeSpec {
         postRepository.saveAll(
@@ -136,16 +141,31 @@ class PostServiceTest(
     }
 
     given("게시글 상세 조회 시") {
-        val saved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "글쓴이"))
+        val postSaved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "글쓴이"))
         When("게시글 조회 인풋을 정상적으로 할 때") {
-            val postDetailResponseDto = postService.getPost(saved.id)
+            val postDetailResponseDto = postService.getPost(postSaved.id)
             then("게시글 상세 정보가 조회된다.") {
                 postDetailResponseDto shouldNotBe null
-                postDetailResponseDto.id shouldBe saved.id
+                postDetailResponseDto.id shouldBe postSaved.id
                 postDetailResponseDto.title shouldBe "제목"
                 postDetailResponseDto.content shouldBe "내용"
                 postDetailResponseDto.createdBy shouldBe "글쓴이"
-                postDetailResponseDto.createdAt shouldBe saved.createdAt
+                postDetailResponseDto.createdAt shouldBe postSaved.createdAt
+            }
+        }
+        When("게시글 에 댓글을 추가 시") {
+            commentRepository.save(Comment(content = "내용1", createdBy = "유저1", post = postSaved))
+            commentRepository.save(Comment(content = "내용2", createdBy = "유저2", post = postSaved))
+            commentRepository.save(Comment(content = "내용3", createdBy = "유저3", post = postSaved))
+            val postDetailResponseDto = postService.getPost(postSaved.id)
+            then("게시글 에 댓글이 추가된다.") {
+                postDetailResponseDto.comments[0].id shouldBe 1L
+                postDetailResponseDto.comments[0].content shouldBe "내용1"
+                postDetailResponseDto.comments[1].content shouldBe "내용2"
+                postDetailResponseDto.comments[2].content shouldBe "내용3"
+                postDetailResponseDto.comments[0].createdBy shouldBe "유저1"
+                postDetailResponseDto.comments[1].createdBy shouldBe "유저2"
+                postDetailResponseDto.comments[2].createdBy shouldBe "유저3"
             }
         }
         When("게시글을 찾을 수 없을때") {

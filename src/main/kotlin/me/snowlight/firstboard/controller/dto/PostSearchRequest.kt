@@ -10,9 +10,9 @@ data class PostSearchRequest(
     val createdBy: String? = null,
 )
 
-fun PostSearchRequest.toDto() : PostSearchRequestDto {
+fun PostSearchRequest.toDto(): PostSearchRequestDto {
     return PostSearchRequestDto(
         title = this.title,
-        createdBy = this.createdBy,
+        createdBy = this.createdBy
     )
 }

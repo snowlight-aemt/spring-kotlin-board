@@ -42,4 +42,3 @@ class CommentController(
         return ok(commentService.deleteComment(id, CommentDeleteDto(deletedBy = deletedBy)))
     }
 }
-

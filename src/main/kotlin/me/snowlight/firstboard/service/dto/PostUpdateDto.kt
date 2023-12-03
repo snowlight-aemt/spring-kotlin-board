@@ -1,9 +1,8 @@
 package me.snowlight.firstboard.service.dto
 
-import me.snowlight.firstboard.domain.Post
-
-data class PostUpdateDto (
+data class PostUpdateDto(
     val title: String,
     val content: String,
     val updatedBy: String,
+    val tags: MutableList<String> = mutableListOf(),
 )

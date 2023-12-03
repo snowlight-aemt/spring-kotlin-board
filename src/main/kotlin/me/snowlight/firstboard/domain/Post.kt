@@ -18,16 +18,19 @@ class Post(
     createdBy: String,
     title: String,
     content: String,
-): BaseEntity(
-    createdBy,
+    tags: MutableList<String> = mutableListOf(),
+) : BaseEntity(
+    createdBy
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
     var id: Long = 0
+
     @Column(name = "title")
     var title: String = title
         protected set
+
     @Lob
     @Column(name = "content")
     var content: String = content
@@ -35,6 +38,10 @@ class Post(
 
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = [CascadeType.ALL])
     var comments: MutableList<Comment> = mutableListOf()
+        protected set
+
+    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = [CascadeType.ALL])
+    var tags: MutableList<Tag> = tags.map { Tag(it, createdBy, this) }.toMutableList()
         protected set
 
     fun update(postUpdateDto: PostUpdateDto) {

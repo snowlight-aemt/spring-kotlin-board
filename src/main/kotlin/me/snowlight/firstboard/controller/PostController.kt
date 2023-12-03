@@ -42,7 +42,7 @@ class PostController(
         ResponseEntity.ok(postService.deletePost(id, PostDeleteDto(createdBy)))
 
     @GetMapping("/{id}")
-    fun getPost(@PathVariable id: Long) : ResponseEntity<PostDetailResponse> =
+    fun getPost(@PathVariable id: Long): ResponseEntity<PostDetailResponse> =
         ResponseEntity.ok(postService.getPost(id).toPostResponse())
 
     @GetMapping

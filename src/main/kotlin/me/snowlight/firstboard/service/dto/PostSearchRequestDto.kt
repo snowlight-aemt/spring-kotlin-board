@@ -1,6 +1,6 @@
 package me.snowlight.firstboard.service.dto
 
-data class PostSearchRequestDto (
+data class PostSearchRequestDto(
     val title: String? = null,
     val createdBy: String? = null,
 )

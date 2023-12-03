@@ -3,7 +3,7 @@ package me.snowlight.firstboard.controller.dto
 import jakarta.validation.constraints.NotEmpty
 import me.snowlight.firstboard.service.dto.CommentCreateDto
 
-data class CommentCreateRequest (
+data class CommentCreateRequest(
     @NotEmpty
     val content: String,
     @NotEmpty

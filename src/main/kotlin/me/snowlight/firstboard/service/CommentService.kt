@@ -32,14 +32,14 @@ class CommentService(
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw CommentNotFoundException()
         comment.update(commentUpdateDto)
 
-        return commentId;
+        return commentId
     }
 
     @Transactional
     fun deleteComment(commentId: Long, commentDeleteDto: CommentDeleteDto): Long {
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw CommentNotFoundException()
-        if (commentDeleteDto.deletedBy != comment.createdBy ) {
-            throw CommentNotDeletableException();
+        if (commentDeleteDto.deletedBy != comment.createdBy) {
+            throw CommentNotDeletableException()
         }
 
         commentRepository.delete(comment)

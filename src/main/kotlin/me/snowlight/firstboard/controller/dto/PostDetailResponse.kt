@@ -9,21 +9,24 @@ data class PostDetailResponse(
     val content: String,
     val createdBy: String,
     val createdAt: LocalDateTime,
-    val comments: List<CommentDetailResponse> = emptyList()
+    val comments: List<CommentDetailResponse> = emptyList(),
+    val tags: MutableList<TagDetailResponse> = mutableListOf(),
 )
 
-fun PostDetailResponseDto.toPostResponse() : PostDetailResponse {
+fun PostDetailResponseDto.toPostResponse(): PostDetailResponse {
     return PostDetailResponse(
         id = id,
         title = title,
         content = content,
         createdBy = createdBy,
         createdAt = createdAt,
-        comments = comments.map { CommentDetailResponse(
-            id = it.id,
-            content = it.content,
-            createdBy = it.createdBy,
-            createdAt = it.createdAt,
-        ) }
+        comments = comments.map {
+            CommentDetailResponse(
+                id = it.id,
+                content = it.content,
+                createdBy = it.createdBy,
+                createdAt = it.createdAt
+            )
+        }
     )
 }

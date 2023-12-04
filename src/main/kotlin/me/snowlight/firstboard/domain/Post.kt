@@ -51,12 +51,14 @@ class Post(
 
         this.title = postUpdateDto.title
         this.content = postUpdateDto.content
-
-        if (this.tags.map { it.name } != postUpdateDto.tags) {
-            this.tags.clear()
-            this.tags.addAll(postUpdateDto.tags.map { Tag(it, postUpdateDto.updatedBy, this) }.toMutableList())
-        }
-
+        replaceTags(postUpdateDto.tags)
         super.updatedBy(postUpdateDto.updatedBy)
+    }
+
+    private fun replaceTags(tags: List<String>) {
+        if (this.tags.map { it.name } != tags) {
+            this.tags.clear()
+            this.tags.addAll(tags.map { Tag(it, this.createdBy, this) }.toMutableList())
+        }
     }
 }

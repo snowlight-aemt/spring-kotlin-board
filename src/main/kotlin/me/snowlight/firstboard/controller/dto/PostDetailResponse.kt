@@ -9,6 +9,7 @@ data class PostDetailResponse(
     val content: String,
     val createdBy: String,
     val createdAt: LocalDateTime,
+    val likeCount: Long? = 0L,
     val comments: List<CommentDetailResponse> = emptyList(),
     val tags: MutableList<TagDetailResponse> = mutableListOf(),
 )

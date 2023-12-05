@@ -7,13 +7,16 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import me.snowlight.firstboard.domain.Comment
+import me.snowlight.firstboard.domain.Like
 import me.snowlight.firstboard.domain.Post
 import me.snowlight.firstboard.exception.PostNotDeletableException
 import me.snowlight.firstboard.exception.PostNotFoundException
 import me.snowlight.firstboard.exception.PostNotUpdatableException
 import me.snowlight.firstboard.repository.CommentRepository
+import me.snowlight.firstboard.repository.LikeRepository
 import me.snowlight.firstboard.repository.PostRepository
 import me.snowlight.firstboard.repository.TagRepository
+import me.snowlight.firstboard.service.dto.LikeCreateDto
 import me.snowlight.firstboard.service.dto.PostCreateDto
 import me.snowlight.firstboard.service.dto.PostDeleteDto
 import me.snowlight.firstboard.service.dto.PostSearchRequestDto
@@ -30,6 +33,8 @@ class PostServiceTest(
     postRepository: PostRepository,
     commentRepository: CommentRepository,
     tagRepository: TagRepository,
+    likeRepository: LikeRepository,
+    likeService: LikeService,
 ) : BehaviorSpec({
     beforeSpec {
         postRepository.saveAll(
@@ -260,6 +265,18 @@ class PostServiceTest(
                 postDetailResponseDto.comments[2].createdBy shouldBe "유저3"
             }
         }
+        When("게시글 에 좋아요가 있을 때") {
+            likeRepository.save(Like(postSaved, "유저5"))
+            likeRepository.save(Like(postSaved, "유저5"))
+            likeRepository.save(Like(postSaved, "유저5"))
+
+            val postDetailResponseDto = postService.getPost(postSaved.id)
+            then("게시글 좋아요 를 확인한다.") {
+                postDetailResponseDto shouldNotBe null
+                postDetailResponseDto.id shouldBe postSaved.id
+                postDetailResponseDto.likeCount shouldBe 3L
+            }
+        }
         When("태그가 입력될 때") {
             val postSaved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "글쓴이", tags = mutableListOf("spring", "java")))
             then("태그가 정상적으로 조회된다.") {
@@ -325,6 +342,27 @@ class PostServiceTest(
                 page.content.size shouldBe 2
                 page.forEach {
                     it.tag shouldBe "tag1"
+                }
+            }
+        }
+
+        When("게시글 목록을 글쓴이 조건 조회할 때 (좋아요 포함)") {
+            val page: Page<PostSearchResponseDto> = postService.getPageBy(
+                PageRequest.of(0, 5),
+                PostSearchRequestDto(createdBy = "글쓴이1")
+            )
+            page.content.forEach {
+                likeService.createLike(it.id, LikeCreateDto("유저5"))
+                likeService.createLike(it.id, LikeCreateDto("유저5"))
+                likeService.createLike(it.id, LikeCreateDto("유저5"))
+            }
+            val likedPage: Page<PostSearchResponseDto> = postService.getPageBy(
+                PageRequest.of(0, 5),
+                PostSearchRequestDto(createdBy = "글쓴이1")
+            )
+            then("게시글 첫 번째 태크가 조회된다.") {
+                likedPage.content.forEach {
+                    it.countLike shouldBe 3
                 }
             }
         }

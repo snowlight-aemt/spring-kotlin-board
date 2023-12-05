@@ -7,16 +7,18 @@ data class PostDetailResponseDto(
     val id: Long,
     val title: String,
     val content: String,
+    val likeCount: Long? = 0L,
     val createdBy: String,
     val createdAt: LocalDateTime,
     val comments: List<CommentDetailResponseDto>,
 )
 
-fun Post.toPostDetailResponseDto(): PostDetailResponseDto {
+fun Post.toPostDetailResponseDto(countLike : (Long) -> Long): PostDetailResponseDto {
     return PostDetailResponseDto(
         id = this.id,
         title = this.title,
         content = this.content,
+        likeCount = countLike(this.id),
         createdBy = this.createdBy,
         createdAt = this.createdAt,
         comments = this.comments.map {

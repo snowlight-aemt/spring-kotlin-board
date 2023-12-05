@@ -18,7 +18,7 @@ class Comment(
     content: String,
     createdBy: String,
     post: Post,
-): BaseEntity(
+) : BaseEntity(
     createdBy = createdBy
 ) {
     @Id

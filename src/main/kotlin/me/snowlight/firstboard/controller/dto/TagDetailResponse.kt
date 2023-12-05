@@ -2,9 +2,9 @@ package me.snowlight.firstboard.controller.dto
 
 import java.time.LocalDateTime
 
-data class CommentDetailResponse(
+data class TagDetailResponse(
     val id: Long,
-    val content: String,
+    val name: String,
     val createdBy: String,
     val createdAt: LocalDateTime,
 )

@@ -23,7 +23,7 @@ class CommentServiceTest(
     commentRepository: CommentRepository,
     commentService: CommentService,
     postRepository: PostRepository,
-): BehaviorSpec({
+) : BehaviorSpec({
     given("댓글 생성 시") {
         val postSaved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "유저1"))
         When("댓글에 정상 인풋이 입력될 때") {
@@ -31,7 +31,7 @@ class CommentServiceTest(
                 postSaved.id,
                 CommentCreateDto(
                     content = "댓글 내용",
-                    createdBy = "유저2",
+                    createdBy = "유저2"
                 )
             )
             then("댓글이 정상적으로 생성되는지 확인") {
@@ -63,8 +63,9 @@ class CommentServiceTest(
         When("댓글에 정상 인풋을 입력했을 때") {
             val commentSaved = commentRepository.save(Comment(content = "내용", createdBy = "유저2", post = postSaved))
             val commentId = commentService.updateComment(
-                                                commentSaved.id,
-                                                CommentUpdateDto(content = "수정 내용",updatedBy = "유저2"))
+                commentSaved.id,
+                CommentUpdateDto(content = "수정 내용", updatedBy = "유저2")
+            )
             then("댓글이 정상적으로 수정되었는지 확인한다.") {
                 commentId shouldNotBe null
                 val commentUpdated = commentRepository.findByIdOrNull(commentId)
@@ -79,7 +80,8 @@ class CommentServiceTest(
                 shouldThrow<CommentNotFoundException> {
                     commentService.updateComment(
                         99999L,
-                        CommentUpdateDto(content = "수정 내용",updatedBy = "유저2"))
+                        CommentUpdateDto(content = "수정 내용", updatedBy = "유저2")
+                    )
                 }
             }
         }
@@ -90,7 +92,8 @@ class CommentServiceTest(
                 shouldThrow<CommentNotUpdatableException> {
                     commentService.updateComment(
                         commentSaved.id,
-                        CommentUpdateDto(content = "수정 내용",updatedBy = "유저1"))
+                        CommentUpdateDto(content = "수정 내용", updatedBy = "유저1")
+                    )
                 }
             }
         }

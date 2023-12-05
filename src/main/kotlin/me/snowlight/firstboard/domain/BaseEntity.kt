@@ -4,7 +4,7 @@ import jakarta.persistence.MappedSuperclass
 import java.time.LocalDateTime
 
 @MappedSuperclass
-abstract class BaseEntity (
+abstract class BaseEntity(
     createdBy: String,
 ) {
     val createdBy: String = createdBy

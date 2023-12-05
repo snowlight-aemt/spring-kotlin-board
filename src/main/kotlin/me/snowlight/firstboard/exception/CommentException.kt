@@ -1,7 +1,6 @@
 package me.snowlight.firstboard.exception
 
-open class CommentException(message: String): RuntimeException(message) {
-}
+open class CommentException(message: String) : RuntimeException(message)
 
 class CommentNotFoundException : CommentException("댓글을 찾을 수 없습니다.")
 

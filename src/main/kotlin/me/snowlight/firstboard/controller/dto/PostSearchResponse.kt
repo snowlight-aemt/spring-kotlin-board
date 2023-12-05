@@ -9,6 +9,7 @@ data class PostSearchResponse(
     val id: Long?,
     val title: String?,
     val tag: String? = null,
+    val likeCount: Long? = 0L,
     val createdBy: String?,
     val createdAt: LocalDateTime?,
 )

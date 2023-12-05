@@ -1,0 +1,7 @@
+### 좋아요 적용
+POST http://localhost:8080/posts/id/likes
+Content-Type: application/json
+
+{
+    "createdBy": "유저1"
+}

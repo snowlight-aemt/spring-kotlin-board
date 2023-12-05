@@ -34,17 +34,17 @@ class PostServiceTest(
     beforeSpec {
         postRepository.saveAll(
             listOf(
-                Post(title = "제목1", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목1", content = "내용", createdBy = "글쓴이1"),
-                Post(title = "제목1", content = "내용", createdBy = "글쓴이1"),
-                Post(title = "제목1", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목5", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목6", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목7", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목8", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목9", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목10", content = "내용", createdBy = "글쓴이"),
-                Post(title = "제목11", content = "내용", createdBy = "글쓴이")
+                Post(title = "제목1", content = "내용11", createdBy = "글쓴이2", tags = mutableListOf("tag1", "spring", "java")),
+                Post(title = "제목1", content = "내용22", createdBy = "글쓴이1", tags = mutableListOf("tag1", "spring", "kotlin")),
+                Post(title = "제목1", content = "내용33", createdBy = "글쓴이1", tags = mutableListOf("tag1", "php", "c#")),
+                Post(title = "제목1", content = "내용44", createdBy = "글쓴이2", tags = mutableListOf("tag1", "spring", "kotlin")),
+                Post(title = "제목5", content = "내용55", createdBy = "글쓴이2", tags = mutableListOf("tag1")),
+                Post(title = "제목6", content = "내용66", createdBy = "글쓴이2", tags = mutableListOf("tag1")),
+                Post(title = "제목7", content = "내용77", createdBy = "글쓴이2", tags = mutableListOf("tag1")),
+                Post(title = "제목8", content = "내용88", createdBy = "글쓴이2", tags = mutableListOf("tag1")),
+                Post(title = "제목9", content = "내용99", createdBy = "글쓴이2", tags = mutableListOf("tag1")),
+                Post(title = "제목10", content = "내용111", createdBy = "글쓴이2", tags = mutableListOf("tag1", "php", "c#")),
+                Post(title = "제목11", content = "내용222", createdBy = "글쓴이2", tags = mutableListOf("tag1", "php", "c#"))
             )
         )
     }
@@ -82,16 +82,6 @@ class PostServiceTest(
             then("게시글 정상적으로 생성됨을 확인한다.") {
                 val tags = tagRepository.findByPostId(postId)
                 tags[0].name shouldBe  "spring"
-//                postId shouldBeGreaterThan 0L
-//                val post = postRepository.findByIdOrNull(postId)
-//                post shouldNotBe null
-//                post?.title shouldBe "제목"
-//                post?.content shouldBe "내용"
-//                post?.createdBy shouldBe "글쓴이"
-//                post?.tags shouldNotBe null
-//                post?.tags?.get(0) shouldBe "spring"
-//                post?.tags?.get(0) shouldBe "java"
-//                post?.tags?.get(0) shouldBe "code"
             }
         }
     }
@@ -270,6 +260,14 @@ class PostServiceTest(
                 postDetailResponseDto.comments[2].createdBy shouldBe "유저3"
             }
         }
+        When("태그가 입력될 때") {
+            val postSaved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "글쓴이", tags = mutableListOf("spring", "java")))
+            then("태그가 정상적으로 조회된다.") {
+                val tags = tagRepository.findByPostId(postSaved.id)
+                tags[0].name shouldBe "spring"
+                tags[1].name shouldBe "java"
+            }
+        }
         When("게시글을 찾을 수 없을때") {
             then("게시글을 찾을 수 없다라는 예외가 발생한다.") {
                 shouldThrow<PostNotFoundException> {
@@ -320,6 +318,29 @@ class PostServiceTest(
                 page.content[0].createdBy shouldContain "글쓴이1"
                 page.content[1].title shouldContain "제목1"
                 page.content[1].createdBy shouldContain "글쓴이1"
+            }
+            then("게시글 첫 번째 태크가 조회된다.") {
+                page.number shouldBe 0
+                page.size shouldBe 5
+                page.content.size shouldBe 2
+                page.forEach {
+                    it.tag shouldBe "tag1"
+                }
+            }
+        }
+
+        When("게시글 목록을 태그 조건으로 조회랃 때") {
+            val page = postService.getPageBy(
+                PageRequest.of(0, 5),
+                PostSearchRequestDto(tag = "php")
+            )
+            then("게시글 목록을 확인할 수 있다.") {
+                page.number shouldBe 0
+                page.size shouldBe 5
+                page.content.size shouldBe 3
+                page.content[0].title shouldContain "제목1"
+                page.content[1].title shouldContain "제목1"
+                page.content[2].title shouldContain "제목1"
             }
         }
     }

@@ -1,7 +1,9 @@
 package me.snowlight.firstboard.repository
 
+import com.querydsl.core.types.dsl.Expressions
 import me.snowlight.firstboard.domain.Post
 import me.snowlight.firstboard.domain.QPost.post
+import me.snowlight.firstboard.domain.QTag.tag
 import me.snowlight.firstboard.service.dto.PostSearchRequestDto
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -20,7 +22,8 @@ class CustomPostRepositoryImpl : CustomPostRepository, QuerydslRepositorySupport
         val result = from(post)
             .where(
                 postSearchRequestDto.title?.let { post.title.contains(it) },
-                postSearchRequestDto.createdBy?.let { post.createdBy.eq(it) }
+                postSearchRequestDto.createdBy?.let { post.createdBy.eq(it) },
+                postSearchRequestDto.tag?.let { post.tags.any().name.eq(it) },
             )
             .orderBy(post.createdAt.desc())
             .offset(pageRequest.offset)

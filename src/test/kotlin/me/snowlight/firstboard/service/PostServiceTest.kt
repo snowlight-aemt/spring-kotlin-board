@@ -208,6 +208,26 @@ class PostServiceTest(
                 postRepository.findByIdOrNull(deletedId) shouldBe null
             }
         }
+        When("게시글 삭제가 정상적일때 (tags 포함)") {
+            val saved2 = postRepository.save(Post(
+                title = "제목",
+                content = "내용",
+                createdBy = "글쓴이",
+                tags = mutableListOf("string", "java")
+            ))
+            val tags = tagRepository.findByPostId(saved2.id)
+            postService.deletePost(
+                saved2.id,
+                PostDeleteDto(
+                    updatedBy = "글쓴이"
+                )
+            )
+
+            then("게시글 삭제를 확인한다.") {
+                tagRepository.findByIdOrNull(tags[0].id) shouldBe null
+                tagRepository.findByIdOrNull(tags[1].id) shouldBe null
+            }
+        }
         When("게시글을 삭제할 수 없습니다, 예외가 발생한다.") {
             val saved2 = postRepository.save(Post(title = "제목", content = "내용", createdBy = "글쓴이"))
             then("게시글 삭제를 확인한다.") {

@@ -266,9 +266,9 @@ class PostServiceTest(
             }
         }
         When("게시글 에 좋아요가 있을 때") {
-            likeRepository.save(Like(postSaved, "유저5"))
-            likeRepository.save(Like(postSaved, "유저5"))
-            likeRepository.save(Like(postSaved, "유저5"))
+            likeService.createLike(postSaved.id, LikeCreateDto("유저5"))
+            likeService.createLike(postSaved.id, LikeCreateDto("유저5"))
+            likeService.createLike(postSaved.id, LikeCreateDto("유저5"))
 
             val postDetailResponseDto = postService.getPost(postSaved.id)
             then("게시글 좋아요 를 확인한다.") {
@@ -362,7 +362,7 @@ class PostServiceTest(
             )
             then("게시글 첫 번째 태크가 조회된다.") {
                 likedPage.content.forEach {
-                    it.countLike shouldBe 3
+                    it.likeCount shouldBe 3
                 }
             }
         }

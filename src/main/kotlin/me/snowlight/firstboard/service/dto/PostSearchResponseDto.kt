@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 data class PostSearchResponseDto(
     val id: Long,
     val title: String,
-    val countLike: Long,
+    val likeCount: Long,
     val createdBy: String,
     val createdAt: LocalDateTime,
     val tag: String? = null,
@@ -24,7 +24,7 @@ fun Page<Post>.toPageSearchResponseDto(countLike: (Long) -> Long) = PageImpl(
 fun Post.toPageSearchResponseDto(countLike: (Long) -> Long) = PostSearchResponseDto(
     id = this.id,
     title = this.title,
-    countLike = countLike(this.id),
+    likeCount = countLike(this.id),
     createdBy = this.createdBy,
     createdAt = this.createdAt,
     tag = this.tags.firstOrNull()?.name,

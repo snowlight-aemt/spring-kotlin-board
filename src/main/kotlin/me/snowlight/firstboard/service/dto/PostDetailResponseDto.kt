@@ -8,9 +8,10 @@ data class PostDetailResponseDto(
     val title: String,
     val content: String,
     val likeCount: Long? = 0L,
+    val tags: List<String> = listOf(),
+    val comments: List<CommentDetailResponseDto>,
     val createdBy: String,
     val createdAt: LocalDateTime,
-    val comments: List<CommentDetailResponseDto>,
 )
 
 fun Post.toPostDetailResponseDto(countLike : (Long) -> Long): PostDetailResponseDto {
@@ -19,8 +20,7 @@ fun Post.toPostDetailResponseDto(countLike : (Long) -> Long): PostDetailResponse
         title = this.title,
         content = this.content,
         likeCount = countLike(this.id),
-        createdBy = this.createdBy,
-        createdAt = this.createdAt,
+        tags = this.tags.map { it.name },
         comments = this.comments.map {
             CommentDetailResponseDto(
                 id = it.id,
@@ -28,6 +28,8 @@ fun Post.toPostDetailResponseDto(countLike : (Long) -> Long): PostDetailResponse
                 createdBy = it.createdBy,
                 createdAt = it.createdAt
             )
-        }
+        },
+        createdBy = this.createdBy,
+        createdAt = this.createdAt,
     )
 }

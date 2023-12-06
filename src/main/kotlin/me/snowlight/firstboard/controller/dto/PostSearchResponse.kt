@@ -23,6 +23,8 @@ fun Page<PostSearchResponseDto>.toResponse() = PageImpl(
 fun PostSearchResponseDto.toResponse() = PostSearchResponse(
     id = id,
     title = title,
+    tag = tag,
+    likeCount = likeCount,
     createdBy = createdBy,
     createdAt = createdAt
 )

@@ -8,11 +8,14 @@ data class PostSearchRequest(
     val title: String? = null,
     @RequestParam
     val createdBy: String? = null,
+    @RequestParam
+    val tag: String? = null,
 )
 
 fun PostSearchRequest.toDto(): PostSearchRequestDto {
     return PostSearchRequestDto(
         title = this.title,
-        createdBy = this.createdBy
+        createdBy = this.createdBy,
+        tag = this.tag,
     )
 }

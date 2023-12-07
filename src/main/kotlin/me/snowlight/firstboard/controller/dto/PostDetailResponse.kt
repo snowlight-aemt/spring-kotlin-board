@@ -11,7 +11,7 @@ data class PostDetailResponse(
     val createdAt: LocalDateTime,
     val likeCount: Long? = 0L,
     val comments: List<CommentDetailResponse> = emptyList(),
-    val tags: MutableList<TagDetailResponse> = mutableListOf(),
+    val tags: List<String> = mutableListOf(),
 )
 
 fun PostDetailResponseDto.toPostResponse(): PostDetailResponse {
@@ -19,8 +19,8 @@ fun PostDetailResponseDto.toPostResponse(): PostDetailResponse {
         id = id,
         title = title,
         content = content,
-        createdBy = createdBy,
-        createdAt = createdAt,
+        likeCount = likeCount,
+        tags = tags,
         comments = comments.map {
             CommentDetailResponse(
                 id = it.id,
@@ -28,6 +28,8 @@ fun PostDetailResponseDto.toPostResponse(): PostDetailResponse {
                 createdBy = it.createdBy,
                 createdAt = it.createdAt
             )
-        }
+        },
+        createdBy = createdBy,
+        createdAt = createdAt,
     )
 }

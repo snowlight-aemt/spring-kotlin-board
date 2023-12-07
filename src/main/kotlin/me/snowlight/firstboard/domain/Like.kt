@@ -22,7 +22,7 @@ class Like(
     val id: Long = 0L
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
+    @JoinColumn(name = "post_id")
     var post: Post = post
         protected set
 }

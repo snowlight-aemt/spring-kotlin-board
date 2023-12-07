@@ -3,7 +3,6 @@ package me.snowlight.firstboard.repository
 import me.snowlight.firstboard.domain.QPost.post
 import me.snowlight.firstboard.domain.QTag.tag
 import me.snowlight.firstboard.domain.Tag
-import me.snowlight.firstboard.service.dto.PostSearchRequestDto
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -21,8 +20,8 @@ interface CustomTagRepository {
 class CustomTagRepositoryImpl : CustomTagRepository, QuerydslRepositorySupport(Tag::class.java) {
     override fun findPageBy(pageRequest: Pageable, tagName: String): Page<Tag> {
         return from(tag)
-                .join(tag.post)
-                .fetchJoin()
+            .join(tag.post, post)
+            .fetchJoin()
             .where(tag.name.eq(tagName))
             .orderBy(tag.post.createdAt.desc())
             .offset(pageRequest.offset)

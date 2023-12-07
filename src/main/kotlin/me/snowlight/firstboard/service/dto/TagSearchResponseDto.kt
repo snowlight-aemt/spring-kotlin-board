@@ -4,10 +4,10 @@ import me.snowlight.firstboard.domain.Tag
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 
-fun Page<Tag>. toPageSearchResponseDto(countLike: (Long) -> Long) = PageImpl(
+fun Page<Tag>.toPageSearchResponseDto(countLike: (Long) -> Long) = PageImpl(
     content.map { it.toSearchResponseDto(countLike) },
     pageable,
-    totalElements,
+    totalElements
 )
 
 fun Tag.toSearchResponseDto(countLike: (Long) -> Long) = PostSearchResponseDto(
@@ -16,5 +16,5 @@ fun Tag.toSearchResponseDto(countLike: (Long) -> Long) = PostSearchResponseDto(
     likeCount = countLike(this.post.id),
     createdBy = this.post.createdBy,
     createdAt = this.post.createdAt,
-    tag = this.name,
+    tag = this.name
 )

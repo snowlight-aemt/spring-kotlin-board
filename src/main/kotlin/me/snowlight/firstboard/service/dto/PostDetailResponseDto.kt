@@ -14,7 +14,7 @@ data class PostDetailResponseDto(
     val createdAt: LocalDateTime,
 )
 
-fun Post.toPostDetailResponseDto(countLike : (Long) -> Long): PostDetailResponseDto {
+fun Post.toPostDetailResponseDto(countLike: (Long) -> Long): PostDetailResponseDto {
     return PostDetailResponseDto(
         id = this.id,
         title = this.title,
@@ -30,6 +30,6 @@ fun Post.toPostDetailResponseDto(countLike : (Long) -> Long): PostDetailResponse
             )
         },
         createdBy = this.createdBy,
-        createdAt = this.createdAt,
+        createdAt = this.createdAt
     )
 }

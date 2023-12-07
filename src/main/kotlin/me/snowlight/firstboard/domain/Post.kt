@@ -6,6 +6,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.Lob
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
@@ -13,7 +14,7 @@ import me.snowlight.firstboard.exception.PostNotUpdatableException
 import me.snowlight.firstboard.service.dto.PostUpdateDto
 
 @Entity
-@Table
+@Table(indexes = [ Index(name = "idx_createdBy", columnList = "createdBy") ])
 class Post(
     createdBy: String,
     title: String,

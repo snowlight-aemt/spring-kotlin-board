@@ -30,6 +30,6 @@ fun PostDetailResponseDto.toPostResponse(): PostDetailResponse {
             )
         },
         createdBy = createdBy,
-        createdAt = createdAt,
+        createdAt = createdAt
     )
 }

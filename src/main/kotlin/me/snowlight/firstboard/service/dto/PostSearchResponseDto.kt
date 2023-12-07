@@ -27,5 +27,5 @@ fun Post.toPageSearchResponseDto(countLike: (Long) -> Long) = PostSearchResponse
     likeCount = countLike(this.id),
     createdBy = this.createdBy,
     createdAt = this.createdAt,
-    tag = this.tags.firstOrNull()?.name,
+    tag = this.tags.firstOrNull()?.name
 )

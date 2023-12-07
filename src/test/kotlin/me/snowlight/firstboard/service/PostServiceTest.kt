@@ -7,7 +7,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import me.snowlight.firstboard.domain.Comment
-import me.snowlight.firstboard.domain.Like
 import me.snowlight.firstboard.domain.Post
 import me.snowlight.firstboard.exception.PostNotDeletableException
 import me.snowlight.firstboard.exception.PostNotFoundException
@@ -39,10 +38,25 @@ class PostServiceTest(
     beforeSpec {
         postRepository.saveAll(
             listOf(
-                Post(title = "제목1", content = "내용11", createdBy = "글쓴이2", tags = mutableListOf("tag1", "spring", "java")),
-                Post(title = "제목1", content = "내용22", createdBy = "글쓴이1", tags = mutableListOf("tag1", "spring", "kotlin")),
+                Post(
+                    title = "제목1",
+                    content = "내용11",
+                    createdBy = "글쓴이2",
+                    tags = mutableListOf("tag1", "spring", "java")
+                ),
+                Post(
+                    title = "제목1",
+                    content = "내용22",
+                    createdBy = "글쓴이1",
+                    tags = mutableListOf("tag1", "spring", "kotlin")
+                ),
                 Post(title = "제목1", content = "내용33", createdBy = "글쓴이1", tags = mutableListOf("tag1", "php", "c#")),
-                Post(title = "제목1", content = "내용44", createdBy = "글쓴이2", tags = mutableListOf("tag1", "spring", "kotlin")),
+                Post(
+                    title = "제목1",
+                    content = "내용44",
+                    createdBy = "글쓴이2",
+                    tags = mutableListOf("tag1", "spring", "kotlin")
+                ),
                 Post(title = "제목5", content = "내용55", createdBy = "글쓴이2", tags = mutableListOf("tag1")),
                 Post(title = "제목6", content = "내용66", createdBy = "글쓴이2", tags = mutableListOf("tag1")),
                 Post(title = "제목7", content = "내용77", createdBy = "글쓴이2", tags = mutableListOf("tag1")),
@@ -80,19 +94,21 @@ class PostServiceTest(
                     title = "제목",
                     content = "내용",
                     createdBy = "글쓴이",
-                    tags = mutableListOf("spring", "java", "code"),
+                    tags = mutableListOf("spring", "java", "code")
                 )
             )
 
             then("게시글 정상적으로 생성됨을 확인한다.") {
                 val tags = tagRepository.findByPostId(postId)
-                tags[0].name shouldBe  "spring"
+                tags[0].name shouldBe "spring"
             }
         }
     }
 
     given("게시글 수정 시") {
-        val saved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "글쓴이", tags = mutableListOf("spring", "java")))
+        val saved = postRepository.save(
+            Post(title = "제목", content = "내용", createdBy = "글쓴이", tags = mutableListOf("spring", "java"))
+        )
         When("게시글 수정 인풋이 정상적으로 들어오면") {
             val updatedId = postService.updatePost(
                 saved.id,
@@ -118,7 +134,7 @@ class PostServiceTest(
                     title = "수정 제목",
                     content = "수정 내용",
                     updatedBy = "글쓴이",
-                    tags = mutableListOf("code", "spring", "java"),
+                    tags = mutableListOf("code", "spring", "java")
                 )
             )
 
@@ -142,7 +158,7 @@ class PostServiceTest(
                         title = "수정 제목",
                         content = "수정 내용",
                         updatedBy = "글쓴이",
-                        tags = mutableListOf("spring", "java", "code"),
+                        tags = mutableListOf("spring", "java", "code")
                     )
                 )
 
@@ -204,12 +220,14 @@ class PostServiceTest(
             }
         }
         When("게시글 삭제가 정상적일때 (tags 포함)") {
-            val saved2 = postRepository.save(Post(
-                title = "제목",
-                content = "내용",
-                createdBy = "글쓴이",
-                tags = mutableListOf("string", "java")
-            ))
+            val saved2 = postRepository.save(
+                Post(
+                    title = "제목",
+                    content = "내용",
+                    createdBy = "글쓴이",
+                    tags = mutableListOf("string", "java")
+                )
+            )
             val tags = tagRepository.findByPostId(saved2.id)
             postService.deletePost(
                 saved2.id,
@@ -278,7 +296,9 @@ class PostServiceTest(
             }
         }
         When("태그가 입력될 때") {
-            val postSaved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "글쓴이", tags = mutableListOf("spring", "java")))
+            val postSaved = postRepository.save(
+                Post(title = "제목", content = "내용", createdBy = "글쓴이", tags = mutableListOf("spring", "java"))
+            )
             then("태그가 정상적으로 조회된다.") {
                 val tags = tagRepository.findByPostId(postSaved.id)
                 tags[0].name shouldBe "spring"

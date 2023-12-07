@@ -3,6 +3,7 @@ package me.snowlight.firstboard.service
 import me.snowlight.firstboard.exception.PostNotDeletableException
 import me.snowlight.firstboard.exception.PostNotFoundException
 import me.snowlight.firstboard.repository.PostRepository
+import me.snowlight.firstboard.repository.TagRepository
 import me.snowlight.firstboard.service.dto.PostCreateDto
 import me.snowlight.firstboard.service.dto.PostDeleteDto
 import me.snowlight.firstboard.service.dto.PostDetailResponseDto
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 class PostService(
     val postRepository: PostRepository,
     val likeService: LikeService,
+    val tagRepository: TagRepository,
 ) {
     @Transactional
     fun createPost(postCreateDto: PostCreateDto) =
@@ -47,8 +49,10 @@ class PostService(
         return postRepository.findByIdOrNull(id)?.toPostDetailResponseDto(likeService::countLike) ?: throw PostNotFoundException()
     }
 
-    // TODO Page 하는 방법
     fun getPageBy(page: Pageable, postSearchRequestDto: PostSearchRequestDto): Page<PostSearchResponseDto> {
+        postSearchRequestDto.tag?.let {
+            return tagRepository.findPageBy(page, it).toPageSearchResponseDto(likeService::countLike);
+        }
         return postRepository.findPageBy(page, postSearchRequestDto).toPageSearchResponseDto(likeService::countLike)
     }
 }

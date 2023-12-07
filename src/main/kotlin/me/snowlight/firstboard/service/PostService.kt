@@ -46,12 +46,13 @@ class PostService(
     }
 
     fun getPost(id: Long): PostDetailResponseDto {
-        return postRepository.findByIdOrNull(id)?.toPostDetailResponseDto(likeService::countLike) ?: throw PostNotFoundException()
+        return postRepository.findByIdOrNull(id)?.toPostDetailResponseDto(likeService::countLike)
+            ?: throw PostNotFoundException()
     }
 
     fun getPageBy(page: Pageable, postSearchRequestDto: PostSearchRequestDto): Page<PostSearchResponseDto> {
         postSearchRequestDto.tag?.let {
-            return tagRepository.findPageBy(page, it).toPageSearchResponseDto(likeService::countLike);
+            return tagRepository.findPageBy(page, it).toPageSearchResponseDto(likeService::countLike)
         }
         return postRepository.findPageBy(page, postSearchRequestDto).toPageSearchResponseDto(likeService::countLike)
     }

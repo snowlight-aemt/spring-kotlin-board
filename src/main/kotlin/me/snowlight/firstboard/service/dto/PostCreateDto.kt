@@ -13,6 +13,6 @@ data class PostCreateDto(
         title = title,
         content = content,
         createdBy = createdBy,
-        tags = tags,
+        tags = tags
     )
 }

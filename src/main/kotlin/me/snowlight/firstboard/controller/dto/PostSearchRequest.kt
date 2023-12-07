@@ -16,6 +16,6 @@ fun PostSearchRequest.toDto(): PostSearchRequestDto {
     return PostSearchRequestDto(
         title = this.title,
         createdBy = this.createdBy,
-        tag = this.tag,
+        tag = this.tag
     )
 }

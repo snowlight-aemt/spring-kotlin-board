@@ -2,6 +2,7 @@ package me.snowlight.firstboard.service
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.extensions.testcontainers.perSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import me.snowlight.firstboard.domain.Comment
@@ -17,6 +18,7 @@ import me.snowlight.firstboard.service.dto.CommentDeleteDto
 import me.snowlight.firstboard.service.dto.CommentUpdateDto
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
+import org.testcontainers.containers.GenericContainer
 
 @SpringBootTest
 class CommentServiceTest(
@@ -24,6 +26,16 @@ class CommentServiceTest(
     commentService: CommentService,
     postRepository: PostRepository,
 ) : BehaviorSpec({
+    val redisContainer = GenericContainer<Nothing>("redis:5.0.3-alpine")
+    beforeSpec {
+        redisContainer.portBindings = listOf("16379:6379")
+        redisContainer.start()
+        listener(redisContainer.perSpec())
+    }
+    afterSpec {
+        redisContainer.stop()
+    }
+
     given("댓글 생성 시") {
         val postSaved = postRepository.save(Post(title = "제목", content = "내용", createdBy = "유저1"))
         When("댓글에 정상 인풋이 입력될 때") {

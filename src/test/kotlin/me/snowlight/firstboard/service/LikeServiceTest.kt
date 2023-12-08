@@ -1,6 +1,8 @@
 package me.snowlight.firstboard.service
 
+import io.kotest.core.spec.BeforeSpec
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.extensions.testcontainers.perSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import me.snowlight.firstboard.domain.Post
@@ -9,30 +11,40 @@ import me.snowlight.firstboard.repository.PostRepository
 import me.snowlight.firstboard.service.dto.LikeCreateDto
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
+import org.testcontainers.containers.GenericContainer
 
 @SpringBootTest
 class LikeServiceTest(
     val postRepository: PostRepository,
     val likeService: LikeService,
     val likeRepository: LikeRepository,
-) :
-    BehaviorSpec({
-        given("좋아요 생성 시") {
-            val saved = postRepository.save(
-                Post(
-                    title = "제목",
-                    content = "내용",
-                    createdBy = "글쓴이"
-                )
-            )
-            When("게시글에 좋아요를 추가할 때") {
-                val likeId = likeService.createLike(saved.id, LikeCreateDto("유저1"))
+) : BehaviorSpec({
+    val redisContainer = GenericContainer<Nothing>("redis:5.0.3-alpine")
+    beforeSpec {
+        redisContainer.portBindings = listOf("16379:6379")
+        redisContainer.start()
+        listener(redisContainer.perSpec())
+    }
+    afterSpec {
+        redisContainer.stop()
+    }
 
-                then("좋아요가 정상적으로 생성되야 한다.") {
-                    val like = likeRepository.findByIdOrNull(likeId)
-                    like shouldNotBe null
-                    like?.createdBy shouldBe "유저1"
-                }
+    given("좋아요 생성 시") {
+        val saved = postRepository.save(
+            Post(
+                title = "제목",
+                content = "내용",
+                createdBy = "글쓴이"
+            )
+        )
+        When("게시글에 좋아요를 추가할 때") {
+            val likeId = likeService.createLike(saved.id, LikeCreateDto("유저1"))
+
+            then("좋아요가 정상적으로 생성되야 한다.") {
+                val like = likeRepository.findByIdOrNull(likeId)
+                like shouldNotBe null
+                like?.createdBy shouldBe "유저1"
             }
         }
-    })
+    }
+})

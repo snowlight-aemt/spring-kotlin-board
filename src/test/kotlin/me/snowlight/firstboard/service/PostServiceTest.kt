@@ -2,6 +2,7 @@ package me.snowlight.firstboard.service
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.extensions.testcontainers.perSpec
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -25,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
+import org.testcontainers.containers.GenericContainer
 
 @SpringBootTest
 class PostServiceTest(
@@ -35,7 +37,12 @@ class PostServiceTest(
     likeRepository: LikeRepository,
     likeService: LikeService,
 ) : BehaviorSpec({
+    val redisContainer = GenericContainer<Nothing>("redis:5.0.3-alpine")
     beforeSpec {
+        redisContainer.portBindings = listOf("16379:6379")
+        redisContainer.start()
+        listener(redisContainer.perSpec())
+
         postRepository.saveAll(
             listOf(
                 Post(
@@ -66,6 +73,9 @@ class PostServiceTest(
                 Post(title = "제목11", content = "내용222", createdBy = "글쓴이2", tags = mutableListOf("tag1", "php", "c#"))
             )
         )
+    }
+    afterSpec {
+        redisContainer.stop()
     }
 
     given("게시글 생성 시") {
